@@ -13,7 +13,6 @@ int main() {
     char buffer[1024];
     char answer[100];
 
-    // Socket oluştur
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         perror("Socket creation failed");
@@ -24,36 +23,55 @@ int main() {
     serverAddr.sin_port = htons(SERVER_PORT);
     serverAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
-    // Sunucuya bağlan
     if (connect(sock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
         perror("Connection failed");
         close(sock);
         exit(1);
     }
 
-    // Soruları sırayla al ve cevapla
-    while (1) {
+    int counter = 1;
+    while (counter) {
         bzero(buffer, sizeof(buffer));
         int n = read(sock, buffer, sizeof(buffer));
         if (n <= 0) {
             break;
         }
-        printf("%s", buffer);  // Sunucudan gelen soruyu ekrana yaz
+
+
+        if(strcmp(buffer, "skip") == 0){
+            counter = 0;
+            break;
+        }
+
+        printf("%s", buffer);
 
         printf("Your answer: ");
         fgets(answer, sizeof(answer), stdin);
-        write(sock, answer, strlen(answer));  // Cevabını sunucuya gönder
-
-        // Sunucudan doğru/yanlış bildirimini al
+        write(sock, answer, strlen(answer));
+        
         bzero(buffer, sizeof(buffer));
         read(sock, buffer, sizeof(buffer));
-        printf("%s", buffer);  // Doğru/yanlış bildirimini yazdır
+        printf("%s", buffer);
+
+
+        if (strcmp(buffer, "skip") == 0) {
+            counter = 0;
+            break;
+        }
+
     }
 
-    // Sonuçları al
     bzero(buffer, sizeof(buffer));
     read(sock, buffer, sizeof(buffer));
-    printf("%s", buffer);  // Sonuçları yazdır
+    printf("%s", buffer);
+
+    bzero(buffer, sizeof(buffer));
+    read(sock, buffer, sizeof(buffer));
+    printf("%s", buffer);
+
+    bzero(buffer, sizeof(buffer));
+    read(sock, buffer, sizeof(buffer));
+    printf("%s", buffer);
 
     close(sock);
     return 0;
