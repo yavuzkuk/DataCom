@@ -45,10 +45,10 @@ func main() {
 
 	answers := []string{
 		"55",
-		"Safranbolu",
+		"safranbolu",
 		"pacific",
 		"8",
-		"Newton",
+		"newton",
 	}
 
 	score1 := 0
